@@ -1,29 +1,8 @@
-:root {
-  color-scheme: light;
-  --ink: #694957;
-  --muted: #9e7d89;
-  --pink: #ec829a;
-  --cream: #fff8f4;
-}
-
 * { box-sizing: border-box; }
-body { min-width: 320px; min-height: 100vh; margin: 0; background: radial-gradient(ellipse at 50% 27%, #fff 0, #fffaf7 39%, #fff3f1 100%); color: var(--ink); font-family: 'Trebuchet MS', Arial, sans-serif; }
-button, textarea { font: inherit; }
-.page { width: min(100%, 760px); min-height: 100vh; margin: auto; padding: 48px 24px 22px; display: flex; flex-direction: column; align-items: center; }
-.intro { text-align: center; z-index: 1; }
-.eyebrow { margin: 0; color: #c07891; font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
-h1, h2 { font-family: Georgia, 'Times New Roman', serif; }
-h1 { margin: 10px 0 8px; color: #754f61; font-size: clamp(32px, 8vw, 45px); font-weight: 600; letter-spacing: -.04em; }
-h1 span { color: #e594a8; font-family: sans-serif; font-size: .7em; vertical-align: 12%; }
-.intro > p { margin: 0; color: #a0808c; font-size: 14px; }
-.garden { width: 100%; display: flex; justify-content: center; flex: 1; padding: 21px 0 0; }
-.bouquet-card { position: relative; width: min(100%, 440px); height: min(590px, calc(100vw + 130px)); min-height: 450px; overflow: hidden; border: 1px solid #f7e9e6; border-radius: 220px 220px 34px 34px; background: linear-gradient(165deg, #fffdfb 2%, #fff7f3 75%, #fff0ed 100%); box-shadow: 0 18px 55px #a96b7120, inset 0 0 0 8px #ffffff8c; }
-.bouquet-hint { position: absolute; z-index: 2; top: 25px; width: 100%; text-align: center; color: #c49a9c; font-size: 10px; letter-spacing: .15em; text-transform: uppercase; }
-.bouquet-hint span { padding: 0 7px; color: #ed9aa5; }
-#bouquet { width: 100%; height: 100%; overflow: visible; }
-.sparkle { position: absolute; z-index: 2; color: #e6ad84; pointer-events: none; }
-.sparkle-one { top: 82px; left: 38px; font-size: 22px; }.sparkle-two { top: 135px; right: 39px; color: #dc9daf; font-size: 28px; }
-footer { margin-top: 17px; color: #b39098; font-size: 11px; letter-spacing: .04em; } footer span { color: #e99eaa; }
+html, body { width: 100%; height: 100%; margin: 0; }
+body { overflow: hidden; background: #fffaf7; }
+.page { display: grid; width: 100%; height: 100%; min-height: 100svh; place-items: center; }
+#bouquet { display: block; width: min(100vw, 620px); height: min(100svh, 760px); overflow: visible; }
 .stem { fill: none; stroke: #759879; stroke-width: 4; stroke-linecap: round; }
 .leaf { fill: #8daf89; stroke: #719274; stroke-width: 1; }
 .baby-stem { fill: none; stroke: #97b28e; stroke-width: 1.7; stroke-linecap: round; }
@@ -34,7 +13,6 @@ footer { margin-top: 17px; color: #b39098; font-size: 11px; letter-spacing: .04e
 .tulip .petal-right { transform: rotate(12deg); }
 .tulip .petal-center { transform: translateY(3px) scaleY(.97); }
 .tulip .petal-inner { fill: #fff8ef; opacity: .26; stroke: none; pointer-events: none; }
-.tulip:hover .petal-center, .tulip:focus-visible .petal-center { filter: brightness(1.06); }
 .tulip:focus-visible { filter: drop-shadow(0 0 4px #db829c); }
 .tulip.is-open .petal-left { transform: translate(-10px,-5px) rotate(-34deg) scaleY(.86); }
 .tulip.is-open .petal-right { transform: translate(10px,-5px) rotate(34deg) scaleY(.86); }
@@ -42,5 +20,8 @@ footer { margin-top: 17px; color: #b39098; font-size: 11px; letter-spacing: .04e
 .tulip .flower-heart { fill: #fff1d6; opacity: .92; pointer-events: none; }
 .paper-note { opacity: 0; transform-box: fill-box; transform-origin: bottom center; transform: scaleY(.06) translateY(14px); transition: transform .55s cubic-bezier(.18,.85,.25,1.15), opacity .25s; pointer-events: none; }
 .tulip.is-open .paper-note { opacity: 1; transform: scaleY(1) translateY(0); }
-@media (max-height: 760px) { .page { padding-top: 24px; }.bouquet-card { height: 450px; min-height: 420px; }.garden { padding-top: 14px; } }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+.flower-screen { position: fixed; inset: 0; z-index: 5; display: grid; place-items: center; background: #fffaf7; animation: screen-in .24s ease-out both; cursor: pointer; }
+.flower-screen[hidden] { display: none; }
+#open-flower { width: min(100vw, 520px); height: min(100svh, 560px); overflow: visible; }
+@keyframes screen-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }

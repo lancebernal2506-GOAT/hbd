@@ -3,29 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#fff8f4">
-  <title>A little bouquet</title>
+  <meta name="theme-color" content="#fffaf7">
+  <title>Bouquet</title>
   <link rel="stylesheet" href="styles.css">
   <script src="script.js" defer></script>
 </head>
 <body>
-  <main class="page">
-    <header class="intro">
-      <span class="eyebrow">a little bunch of happy</span>
-      <h1>A bouquet for you <span>♡</span></h1>
-      <p>Tap a tulip to unfold a little message.</p>
-    </header>
-
-    <section class="garden" aria-label="Interactive bouquet of ten tulips and baby's breath">
-      <div class="bouquet-card">
-        <div class="sparkle sparkle-one">✳</div><div class="sparkle sparkle-two">✧</div>
-        <div class="bouquet-hint">10 tulips <span>·</span> baby's breath</div>
-        <svg id="bouquet" viewBox="0 0 420 510" role="group" aria-label="Bouquet. Choose a tulip to open it."></svg>
-      </div>
-    </section>
-
-    <footer>Made of soft petals &amp; happy thoughts <span>✿</span></footer>
+  <main class="page" aria-label="Bouquet of ten tulips and baby's breath">
+    <svg id="bouquet" viewBox="0 0 420 510" role="group" aria-label="Bouquet. Choose a tulip to open it."></svg>
   </main>
-
+  <div id="flower-screen" class="flower-screen" role="button" tabindex="-1" aria-label="Opened tulip. Click or press Escape to close." hidden>
+    <svg id="open-flower" viewBox="0 0 240 260" aria-hidden="true"></svg>
+  </div>
 </body>
 </html>
