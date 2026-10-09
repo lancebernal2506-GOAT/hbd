@@ -63,14 +63,18 @@ const breathEdge = [-1, -1, 1, 1].map((side, i) => {
 }).join('');
 const breathFront = breathLow + breathEdge;
 
-/* ---------- Tulips arranged in a dome ---------- */
-const centers = Array.from({ length: 10 }, (_, i) => {
-  const t = i / 9;
-  return {
-    x: 74 + t * 272 + random(-4, 4),
-    y: 124 - 68 * Math.sin(Math.PI * t) ** .8 + (i % 2 ? 16 : 0) + random(-5, 5),
-  };
-});
+/* ---------- Tulips scattered at random inside a dome-shaped area ---------- */
+const centers = (() => {
+  const pts = [];
+  let minDist = 36, tries = 0;
+  while (pts.length < 10) {
+    const x = random(78, 342), y = random(50, 148);
+    const inside = ((x - 210) / 138) ** 2 + ((y - 142) / 94) ** 2 <= 1;
+    if (inside && pts.every(p => Math.hypot(p.x - x, p.y - y) >= minDist)) pts.push({ x, y });
+    else if (++tries % 150 === 0) minDist -= 2; // relax spacing if the area gets crowded
+  }
+  return pts;
+})();
 
 function splitMessage(text) {
   const words = text.split(' ');
@@ -91,7 +95,7 @@ function stemMarkup({ x, y }) {
 
 function tulipMarkup({ x, y }, index) {
   const deep = colors[index][0];
-  const angle = (x - 210) / 140 * 26 + random(-6, 6);
+  const angle = (x - 210) / 140 * 22 + random(-14, 14);
   const lines = splitMessage(messages[index]);
   const text = lines.map((line, n) =>
     `<text x="0" y="${lines.length === 1 ? -26 : -32 + n * 10}" text-anchor="middle">${escapeText(line)}</text>`).join('');
@@ -99,13 +103,16 @@ function tulipMarkup({ x, y }, index) {
   return `<g class="tulip" data-flower="${index}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${angle.toFixed(1)})" role="button" tabindex="0" aria-label="Open tulip ${index + 1}">
       <circle class="hit-area" r="24" fill="transparent"/>
       <g class="bloom">
-        <path class="petal petal-left" fill="url(#tb${index})" ${edge} d="M0 6 C-18 8 -24 -8 -21 -24 C-19 -32 -15 -38 -11 -42 C-8 -36 -4 -30 0 -22Z"/>
-        <path class="petal petal-right" fill="url(#tb${index})" ${edge} d="M0 6 C18 8 24 -8 21 -24 C19 -32 15 -38 11 -42 C8 -36 4 -30 0 -22Z"/>
-        <g class="paper-note"><path d="M-25 -44 Q0 -49 25 -44 L22 -9 Q0 -5 -22 -9Z" fill="#fff9e9" stroke="#dfc8a5" stroke-width="1.2"/>${text}</g>
-        <path class="petal petal-center" fill="url(#tf${index})" ${edge} d="M-15 3 C-20 -8 -17 -26 -6 -36 Q-1 -40 0 -44 Q1 -40 6 -36 C17 -26 20 -8 15 3 C9 10 -9 10 -15 3Z"/>
-        <path class="petal-vein" d="M0 -37 Q-3 -18 0 4 M-8 -28 Q-12 -14 -9 -1 M8 -28 Q12 -14 9 -1" stroke="${deep}"/>
-        <path class="petal-inner" d="M-8 -28 Q-12 -14 -7 -1 Q-3 -14 -8 -28Z"/>
+        <ellipse class="flower-base" cx="0" cy="5" rx="5" ry="4.5"/>
+        <path class="petal petal-left" fill="url(#tb${index})" ${edge} d="M0 6 C-19 8 -25 -10 -21 -27 C-19 -35 -15 -41 -12 -45 C-8 -39 -4 -32 0 -24Z"/>
+        <path class="petal petal-right" fill="url(#tb${index})" ${edge} d="M0 6 C19 8 25 -10 21 -27 C19 -35 15 -41 12 -45 C8 -39 4 -32 0 -24Z"/>
+        <path class="petal petal-fl" fill="url(#tf${index})" ${edge} d="M0 9 C-14 9 -21 -4 -19 -20 C-17 -31 -11 -39 -4 -44 C-1 -40 2 -33 3 -22 C3 -10 2 0 0 9Z"/>
+        <path class="petal petal-fr" fill="url(#tf${index})" ${edge} d="M0 9 C14 9 21 -4 19 -20 C17 -31 11 -39 4 -44 C1 -40 -2 -33 -3 -22 C-3 -10 -2 0 0 9Z"/>
+        <path class="petal-vein petal-seam" d="M4 -44 C1 -40 -2 -33 -3 -22 C-3 -10 -2 0 0 9" stroke="${deep}"/>
+        <path class="petal-vein" d="M-4 -38 C-12 -28 -15 -12 -10 6 M-9 -33 C-16 -22 -16 -8 -13 2 M10 -36 C15 -24 15 -10 10 5" stroke="${deep}"/>
+        <path class="petal-inner" d="M-13 -22 Q-16 -8 -11 3 Q-8 -10 -13 -22Z"/>
         <circle class="flower-heart" cx="0" cy="-4" r="3"/>
+        <g class="paper-note"><path d="M-25 -44 Q0 -49 25 -44 L22 -9 Q0 -5 -22 -9Z" fill="#fff9e9" stroke="#dfc8a5" stroke-width="1.2"/>${text}</g>
       </g>
     </g>`;
 }
@@ -144,8 +151,8 @@ svg.innerHTML = `${tulipDefs}${wrapBack}${greens}${breathBack}<g class="stems">$
 function openFlower(flower) {
   lastFlower = flower;
   const bloomMarkup = flower.querySelector('.bloom').innerHTML;
-  openFlowerSvg.innerHTML = `<path class="stem" stroke-width="1.5" d="M0 5 Q2 30 0 62" transform="translate(120 150) scale(2.3)"/>
-    <g class="tulip screen-flower" transform="translate(120 150) scale(2.3)"><g class="bloom">${bloomMarkup}</g></g>`;
+  openFlowerSvg.innerHTML = `<path class="stem" stroke-width="1.5" d="M0 5 Q2 30 0 62" transform="translate(120 150) scale(1.95)"/>
+    <g class="tulip screen-flower" transform="translate(120 150) scale(1.95)"><g class="bloom">${bloomMarkup}</g></g>`;
   flowerScreen.hidden = false;
   const bloom = openFlowerSvg.querySelector('.screen-flower');
   requestAnimationFrame(() => requestAnimationFrame(() => bloom.classList.add('is-open')));

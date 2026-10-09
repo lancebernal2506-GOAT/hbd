@@ -12,15 +12,18 @@ body { overflow: hidden; background: #fffaf7; }
 .tulip .petal { stroke-width: .8; stroke-opacity: .55; stroke-linejoin: round; transform-box: fill-box; transform-origin: 50% 90%; transition: transform .8s cubic-bezier(.2,.85,.25,1.1), opacity .5s; }
 .tulip .petal-left { transform: rotate(4deg); }
 .tulip .petal-right { transform: rotate(-4deg); }
-.tulip .petal-center { transform: translateY(3px) scaleY(.97); }
-.tulip .petal-vein { fill: none; stroke-width: .6; stroke-linecap: round; opacity: .3; pointer-events: none; transition: opacity .4s; }
+.tulip .petal-fl, .tulip .petal-fr { transform: none; }
+.tulip .petal-vein { fill: none; stroke-width: .5; stroke-linecap: round; opacity: .28; pointer-events: none; transition: opacity .4s; }
+.tulip .petal-seam { stroke-width: .9; opacity: .5; }
 .tulip.is-open .petal-vein { opacity: 0; }
 .tulip .petal-inner { fill: #fff; opacity: .4; stroke: none; pointer-events: none; transition: opacity .4s; }
 .tulip:focus-visible { filter: drop-shadow(0 0 4px #db829c); }
-/* fully open: side petals fall outward, front petal folds down, note rises */
-.tulip.is-open .petal-left { transform: translate(-5px, 0) rotate(-46deg); }
-.tulip.is-open .petal-right { transform: translate(5px, 0) rotate(46deg); }
-.tulip.is-open .petal-center { transform: translateY(6px) scale(.9, .38); opacity: .95; }
+/* fully open: petals part outward and the note rises */
+.flower-base { fill: #a9c39a; pointer-events: none; }
+.tulip.is-open .petal-left { transform: translate(-3px, 0) rotate(-50deg); }
+.tulip.is-open .petal-right { transform: translate(3px, 0) rotate(50deg); }
+.tulip.is-open .petal-fl { transform: translate(-4px, 2px) rotate(-32deg) scaleY(.92); }
+.tulip.is-open .petal-fr { transform: translate(4px, 2px) rotate(32deg) scaleY(.92); }
 .tulip.is-open .petal-inner { opacity: 0; }
 .tulip .flower-heart { fill: #fff1d6; opacity: .92; pointer-events: none; }
 .paper-note { opacity: 0; transform-box: fill-box; transform-origin: bottom center; transform: scaleY(.06) translateY(14px); transition: transform .65s cubic-bezier(.18,.85,.25,1.15) .2s, opacity .3s .2s; pointer-events: none; }
