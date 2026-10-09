@@ -1,6 +1,6 @@
 * { box-sizing: border-box; }
 html, body { width: 100%; height: 100%; margin: 0; }
-body { overflow: hidden; background: radial-gradient(ellipse at 50% 27%, #fffdf9 0, #fbf5ed 40%, #f2e7dc 100%); }
+body { overflow: hidden; background: #fffaf7; }
 .page { display: grid; width: 100%; height: 100%; min-height: 100svh; place-items: center; }
 #bouquet { display: block; width: min(100vw, 620px); height: min(100svh, 760px); overflow: visible; }
 .stem { fill: none; stroke: #759879; stroke-width: 4; stroke-linecap: round; }
@@ -26,7 +26,7 @@ body { overflow: hidden; background: radial-gradient(ellipse at 50% 27%, #fffdf9
 .paper-note { opacity: 0; transform-box: fill-box; transform-origin: bottom center; transform: scaleY(.06) translateY(14px); transition: transform .65s cubic-bezier(.18,.85,.25,1.15) .2s, opacity .3s .2s; pointer-events: none; }
 .paper-note text { fill: #805e67; font-family: Georgia, serif; font-size: 6.2px; }
 .tulip.is-open .paper-note { opacity: 1; transform: scaleY(1) translateY(0); }
-.flower-screen { position: fixed; inset: 0; z-index: 5; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 27%, #fffdf9 0, #fbf5ed 40%, #f2e7dc 100%); animation: screen-in .24s ease-out both; cursor: pointer; }
+.flower-screen { position: fixed; inset: 0; z-index: 5; display: grid; place-items: center; background: #fffaf7; animation: screen-in .24s ease-out both; cursor: pointer; }
 .flower-screen[hidden] { display: none; }
 #open-flower { width: min(100vw, 520px); height: min(100svh, 560px); overflow: visible; }
 @keyframes screen-in { from { opacity: 0; } to { opacity: 1; } }

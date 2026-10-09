@@ -26,7 +26,7 @@ const greens = [-74, -52, -30, -10, 10, 30, 52, 74].map((a, i) => {
 }).join('');
 
 /* ---------- Baby's breath: thin sprays with little white blossoms ---------- */
-const sprays = Array.from({ length: 18 }, () => {
+const sprays = Array.from({ length: 38 }, () => {
   const ox = random(110, 310), oy = 178;
   const ex = ox + (ox - 210) * random(.5, 1.1) + random(-18, 18), ey = random(18, 100);
   const cx = (ox + ex) / 2 + random(-14, 14), cy = (oy + ey) / 2;
@@ -34,7 +34,7 @@ const sprays = Array.from({ length: 18 }, () => {
   const cluster = (px, py) => Array.from({ length: 4 }, () =>
     `<circle class="baby-flower" cx="${(px + random(-8, 8)).toFixed(1)}" cy="${(py + random(-7, 7)).toFixed(1)}" r="${random(2.2, 3.6).toFixed(1)}"/>`).join('');
   let parts = `<path class="baby-stem" d="M${ox} ${oy} Q${cx} ${cy} ${ex} ${ey}"/>`;
-  [.5, .68, .84].forEach(t => {
+  [.4, .55, .7, .85].forEach(t => {
     const [px, py] = at(t), bx = px + random(-22, 22), by = py - random(8, 20);
     parts += `<path class="baby-stem" d="M${px} ${py} L${bx} ${by}"/>${cluster(bx, by)}`;
   });
