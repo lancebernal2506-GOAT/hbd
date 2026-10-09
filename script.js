@@ -2,14 +2,18 @@ const svg = document.querySelector('#bouquet');
 const flowerScreen = document.querySelector('#flower-screen');
 const openFlowerSvg = document.querySelector('#open-flower');
 let lastFlower = null;
-const openedFlowers = new Set();
-const page = document.querySelector('.page');
-const finalPaper = document.querySelector('#final-paper');
 
 const messages = [
-  'You are loved', 'Keep blooming!', 'You make me smile', 'You are magic',
-  'I am so so so so so so proud of you', 'I appreciate you a lot more than you know (syempre di ko papahalata di ba)', 'You can do this!', 'You are wonderful',
-  'Sending a hug', 'You make life sweeter',
+  "You're a great friend and I'm very thankful to have you in my life, more than i could ever express", 
+  "I hope that you see how much you mean to me with those mesmerizing eyes", 
+  'You make me smile', 
+  'You are magic',
+  'I am so so so so so so proud of you',
+  'You brighten up my day with just your smile so keep smiling!', 
+  'You can do this!', 
+  'You are wonderful',
+  'Sending a hug', 
+  'You make life sweeter',
 ];
 const random = (min, max) => Math.random() * (max - min) + min;
 const pick = list => list[Math.floor(Math.random() * list.length)];
@@ -152,29 +156,13 @@ svg.innerHTML = `${tulipDefs}${wrapBack}${greens}${breathBack}<g class="stems">$
 
 /* ---------- Opening a tulip full-screen ---------- */
 function openFlower(flower) {
-  if (page.classList.contains('is-gathering') || page.classList.contains('is-complete')) return;
   lastFlower = flower;
-  openedFlowers.add(Number(flower.dataset.flower));
-  if (openedFlowers.size === 10) {
-    startGathering();
-    return;
-  }
   const bloomMarkup = flower.querySelector('.bloom').innerHTML;
   openFlowerSvg.innerHTML = `<path class="stem" stroke-width="1.5" d="M0 5 Q2 30 0 62" transform="translate(120 150) scale(1.95)"/>
     <g class="tulip screen-flower" transform="translate(120 150) scale(1.95)"><g class="bloom">${bloomMarkup}</g></g>`;
   flowerScreen.hidden = false;
   const bloom = openFlowerSvg.querySelector('.screen-flower');
   requestAnimationFrame(() => requestAnimationFrame(() => bloom.classList.add('is-open')));
-}
-
-function startGathering() {
-  flowerScreen.hidden = true;
-  openFlowerSvg.replaceChildren();
-  page.classList.add('is-gathering');
-  window.setTimeout(() => {
-    page.classList.add('is-complete');
-    finalPaper.hidden = false;
-  }, 900);
 }
 
 function closeFlower() {
