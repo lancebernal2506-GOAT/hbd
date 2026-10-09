@@ -4,8 +4,11 @@ const openFlowerSvg = document.querySelector('#open-flower');
 const pickedGarden = document.querySelector('#picked-garden');
 const finalPaper = document.querySelector('#final-paper');
 let lastFlower = null;
+let lastPickedButton = null;
 const pickedFlowers = new Set();
+const pickedButtons = new Map();
 let completionPending = false;
+let completionTimer = null;
 
 const messages = [
   "You're a great friend and I'm very thankful to have you in my life, more than i could ever express", 
@@ -29,6 +32,8 @@ const colors = hues.map(h => {
   const sat = random(52, 70), lift = random(-3, 3);
   return [`hsl(${h} ${sat}% ${70 + lift}%)`, `hsl(${h} ${random(70, 90)}% ${95 + lift / 3}%)`, `hsl(${h} ${sat}% ${85 + lift}%)`];
 });
+const paperColors = colors.map(([, , mid]) => mid);
+finalPaper.querySelector('.poem-sheet').style.background = `linear-gradient(135deg, ${paperColors.map((color, i) => `${color} ${(i / (paperColors.length - 1) * 100).toFixed(1)}%`).join(', ')})`;
 const tulipDefs = `<defs>${colors.map(([deep, light, mid], i) =>
   `<linearGradient id="tf${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${deep}"/><stop offset=".5" stop-color="${light}"/><stop offset="1" stop-color="${mid}"/></linearGradient>` +
   `<linearGradient id="tb${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${deep}"/><stop offset=".6" stop-color="${mid}"/><stop offset="1" stop-color="${light}"/></linearGradient>`).join('')}</defs>`;
@@ -102,9 +107,9 @@ function wrapMessage(text, maxLength = 13) {
 }
 const escapeText = s => s.replaceAll('&', '&amp;').replaceAll('<', '&lt;');
 
-function stemMarkup({ x, y }) {
+function stemMarkup({ x, y }, index) {
   const endX = 210 + (x - 210) * .15, endY = 190;
-  return `<path class="stem" style="stroke:hsl(${random(110, 145)} ${random(14, 22)}% ${random(50, 60)}%)" d="M${x} ${y + 1} Q${x + random(-8, 8)} ${y + 60} ${endX} ${endY}"/>`;
+  return `<path class="stem flower-stem" data-flower="${index}" style="stroke:hsl(${random(110, 145)} ${random(14, 22)}% ${random(50, 60)}%)" d="M${x} ${y + 1} Q${x + random(-8, 8)} ${y + 60} ${endX} ${endY}"/>`;
 }
 
 function tulipMarkup({ x, y }, index) {
@@ -170,8 +175,18 @@ function openFlower(flower) {
   if (!pickedFlowers.has(id)) {
     pickedFlowers.add(id);
     flower.classList.add('is-picked');
-    addPickedFlower(flower, id);
-    if (pickedFlowers.size === messages.length) completionPending = true;
+    svg.querySelector(`.flower-stem[data-flower="${id}"]`)?.classList.add('is-picked');
+    lastPickedButton = addPickedFlower(flower, id);
+    if (pickedFlowers.size === messages.length) {
+      completionPending = true;
+      completionTimer = window.setTimeout(() => {
+        if (!completionPending) return;
+        completionPending = false;
+        startGathering();
+      }, 5000);
+    }
+  } else {
+    lastPickedButton = pickedButtons.get(id) || null;
   }
   const bloomMarkup = flower.querySelector('.bloom').innerHTML;
   openFlowerSvg.innerHTML = `<path class="stem" stroke-width="1.5" d="M0 5 Q2 30 0 62" transform="translate(120 166) scale(2.5)"/>
@@ -187,13 +202,17 @@ function addPickedFlower(flower, id) {
   item.className = 'picked-tulip';
   item.style.setProperty('--pick-delay', `${id * 35}ms`);
   item.setAttribute('aria-label', `Read picked tulip ${id + 1}`);
-  item.innerHTML = `<svg class="picked-icon" viewBox="-28 -54 56 72" aria-hidden="true">${tulipDefs}<g class="tulip" transform="translate(0 0)"><g class="bloom">${flower.querySelector('.bloom').innerHTML}</g></g></svg>`;
+  item.innerHTML = `<svg class="picked-icon" viewBox="-28 -54 56 72" aria-hidden="true">${tulipDefs}<path class="stem" d="M0 4 Q-1 10 0 17"/><g class="tulip" transform="translate(0 0)"><g class="bloom">${flower.querySelector('.bloom').innerHTML}</g></g></svg>`;
   item.addEventListener('click', () => openFlower(flower));
   pickedGarden.append(item);
   pickedGarden.hidden = false;
+  pickedButtons.set(id, item);
+  return item;
 }
 
 function startGathering() {
+  window.clearTimeout(completionTimer);
+  completionPending = false;
   flowerScreen.hidden = true;
   openFlowerSvg.replaceChildren();
   document.body.classList.add('is-gathering');
@@ -206,7 +225,7 @@ function startGathering() {
 function closeFlower() {
   flowerScreen.hidden = true;
   openFlowerSvg.replaceChildren();
-  lastFlower?.focus();
+  lastPickedButton?.focus();
   if (completionPending) {
     completionPending = false;
     startGathering();
