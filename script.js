@@ -36,27 +36,30 @@ function makeSpray(ox, oy, ex, ey, reach = 20) {
   const cluster = (px, py) => Array.from({ length: 4 }, () =>
     `<circle class="baby-flower" style="fill:${pick(['#fffdf8', '#fff7ef', '#fdf0f1', '#f7f4ff', '#fffaf0'])}" cx="${(px + random(-8, 8)).toFixed(1)}" cy="${(py + random(-7, 7)).toFixed(1)}" r="${random(2.2, 3.6).toFixed(1)}"/>`).join('');
   let parts = `<path class="baby-stem" style="stroke:${pick(['#97b28e', '#a6bd9d', '#88a681'])}" d="M${ox} ${oy} Q${cx} ${cy} ${ex} ${ey}"/>`;
-  [.4, .55, .7, .85].forEach(t => {
+  [.45, .62, .8].forEach(t => {
     const [px, py] = at(t), bx = px + random(-reach, reach), by = py - random(6, reach);
     parts += `<path class="baby-stem" d="M${px} ${py} L${bx} ${by}"/>${cluster(bx, by)}`;
   });
   return `<g aria-hidden="true">${parts + cluster(ex, ey)}</g>`;
 }
 
+// Evenly spaced origins (with a little jitter) so the sprays spread out instead of clumping.
+const spaced = (n, from, to, i) => from + (i + random(.15, .85)) / n * (to - from);
+
 // Behind the tulips: tall sprays rising above and between the blooms.
-const breathBack = Array.from({ length: 26 }, () => {
-  const ox = random(110, 310);
-  return makeSpray(ox, 178, ox + (ox - 210) * random(.5, 1.1) + random(-18, 18), random(18, 100));
+const breathBack = Array.from({ length: 13 }, (_, i) => {
+  const ox = spaced(13, 105, 315, i);
+  return makeSpray(ox, 178, ox + (ox - 210) * random(.6, 1.2) + random(-14, 14), random(18, 100));
 }).join('');
 
 // In front of the tulips: short sprays tucked in just below the blooms, plus a few on the outer edges.
-const breathLow = Array.from({ length: 18 }, () => {
-  const ox = random(85, 335);
-  return makeSpray(ox, 186, ox + (ox - 210) * random(.15, .4) + random(-10, 10), random(128, 164), 14);
+const breathLow = Array.from({ length: 9 }, (_, i) => {
+  const ox = spaced(9, 90, 330, i);
+  return makeSpray(ox, 186, ox + (ox - 210) * random(.2, .45) + random(-8, 8), random(128, 164), 14);
 }).join('');
-const breathEdge = Array.from({ length: 6 }, () => {
-  const ox = random(110, 310), side = ox < 210 ? -1 : 1;
-  return makeSpray(ox, 178, 210 + side * random(145, 185), random(30, 100));
+const breathEdge = [-1, -1, 1, 1].map((side, i) => {
+  const ox = 210 + side * (i % 2 ? 70 : 105);
+  return makeSpray(ox, 178, 210 + side * random(150, 185), random(30, 100));
 }).join('');
 const breathFront = breathLow + breathEdge;
 
