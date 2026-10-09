@@ -75,11 +75,11 @@ function tulipMarkup({ x, y }, index) {
   return `<g class="tulip" data-flower="${index}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${angle.toFixed(1)}) scale(1.05)" role="button" tabindex="0" aria-label="Open tulip ${index + 1}">
       <circle class="hit-area" r="24" fill="transparent"/>
       <g class="bloom">
-        <path class="petal petal-left" fill="${palette[0]}" d="M0 5 C-19 -3 -24 -18 -17 -31 C-12 -42 -5 -35 0 -24Z"/>
-        <path class="petal petal-right" fill="${palette[1]}" d="M0 5 C19 -3 24 -18 17 -31 C12 -42 5 -35 0 -24Z"/>
+        <path class="petal petal-left" fill="${palette[0]}" d="M1 6 C-17 7 -24 -9 -21 -26 C-20 -34 -18 -40 -15 -41 C-9 -36 -4 -30 0 -20Z"/>
+        <path class="petal petal-right" fill="${palette[1]}" d="M-1 6 C17 7 24 -9 21 -26 C20 -34 18 -40 15 -41 C9 -36 4 -30 0 -20Z"/>
         <g class="paper-note"><path d="M-25 -44 Q0 -49 25 -44 L22 -9 Q0 -5 -22 -9Z" fill="#fff9e9" stroke="#dfc8a5" stroke-width="1.2"/>${text}</g>
-        <path class="petal petal-center" fill="${palette[2]}" d="M-14 4 C-17 -14 -11 -38 0 -42 C11 -38 17 -14 14 4 Q0 13 -14 4Z"/>
-        <path class="petal-inner" d="M0 -30 Q-3 -18 0 -6 Q3 -18 0 -30Z"/>
+        <path class="petal petal-center" fill="${palette[2]}" d="M-17 0 C-22 -12 -16 -29 -6 -35 Q0 -39 6 -35 C16 -29 22 -12 17 0 C10 9 -10 9 -17 0Z"/>
+        <path class="petal-inner" d="M-8 -26 Q-12 -12 -7 0 Q-3 -13 -8 -26Z"/>
         <circle class="flower-heart" cx="0" cy="-4" r="3"/>
       </g>
     </g>`;
