@@ -9,12 +9,15 @@ const messages = [
   'Sending a hug', 'You make life sweeter',
 ];
 const random = (min, max) => Math.random() * (max - min) + min;
-const palettes = [
-  ['#ec7f9b', '#fde6ea', '#f7b9c6'], ['#f08fa8', '#fff0f2', '#f9c7d1'],
-  ['#e56f8f', '#fbdbe3', '#f3a6b9'], ['#f2a0b2', '#fff3f3', '#fad0d7'],
-  ['#e98aa4', '#fde1e7', '#f5b0c0'], ['#f4b3a6', '#fff0ea', '#fbd2c6'],
-];
-const colors = Array.from({ length: 10 }, () => palettes[Math.floor(random(0, palettes.length))]);
+const pick = list => list[Math.floor(Math.random() * list.length)];
+const shuffle = list => list.map(v => [Math.random(), v]).sort((p, q) => p[0] - q[0]).map(p => p[1]);
+// A spread of hues (rose, blush, coral, peach, lilac) so no two tulips match.
+const hues = shuffle([346, 336, 352, 8, 22, 304, 340, 358, 16, 326]);
+const colors = hues.map(h => {
+  h += random(-5, 5);
+  const sat = random(52, 70), lift = random(-3, 3);
+  return [`hsl(${h} ${sat}% ${70 + lift}%)`, `hsl(${h} ${random(70, 90)}% ${95 + lift / 3}%)`, `hsl(${h} ${sat}% ${85 + lift}%)`];
+});
 const tulipDefs = `<defs>${colors.map(([deep, light, mid], i) =>
   `<linearGradient id="tf${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${deep}"/><stop offset=".5" stop-color="${light}"/><stop offset="1" stop-color="${mid}"/></linearGradient>` +
   `<linearGradient id="tb${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${deep}"/><stop offset=".6" stop-color="${mid}"/><stop offset="1" stop-color="${light}"/></linearGradient>`).join('')}</defs>`;
@@ -22,34 +25,47 @@ const tulipDefs = `<defs>${colors.map(([deep, light, mid], i) =>
 /* ---------- Greenery fanned out behind the tulips ---------- */
 const greens = [-74, -52, -30, -10, 10, 30, 52, 74].map((a, i) => {
   const x = 210 + a * 1.35, s = random(.8, 1.05) + (i % 2 ? 0 : .12);
-  return `<path class="leaf" transform="translate(${x} 160) rotate(${a}) scale(${s})" d="M0 0 C-14 -26 -12 -62 0 -86 C12 -62 14 -26 0 0Z"/>`;
+  const hue = random(100, 145), light = random(56, 68);
+  return `<path class="leaf" style="fill:hsl(${hue} ${random(14, 22)}% ${light}%);stroke:hsl(${hue} 16% ${light - 12}%)" transform="translate(${x} 160) rotate(${a}) scale(${s})" d="M0 0 C-14 -26 -12 -62 0 -86 C12 -62 14 -26 0 0Z"/>`;
 }).join('');
 
 /* ---------- Baby's breath: thin sprays with little white blossoms ---------- */
-const sprays = Array.from({ length: 38 }, () => {
-  const ox = random(110, 310), oy = 178;
-  const ex = ox + (ox - 210) * random(.5, 1.1) + random(-18, 18), ey = random(18, 100);
-  const cx = (ox + ex) / 2 + random(-14, 14), cy = (oy + ey) / 2;
+function makeSpray(ox, oy, ex, ey, reach = 20) {
+  const cx = (ox + ex) / 2 + random(-12, 12), cy = (oy + ey) / 2;
   const at = t => [(1 - t) ** 2 * ox + 2 * (1 - t) * t * cx + t * t * ex, (1 - t) ** 2 * oy + 2 * (1 - t) * t * cy + t * t * ey];
   const cluster = (px, py) => Array.from({ length: 4 }, () =>
-    `<circle class="baby-flower" cx="${(px + random(-8, 8)).toFixed(1)}" cy="${(py + random(-7, 7)).toFixed(1)}" r="${random(2.2, 3.6).toFixed(1)}"/>`).join('');
-  let parts = `<path class="baby-stem" d="M${ox} ${oy} Q${cx} ${cy} ${ex} ${ey}"/>`;
+    `<circle class="baby-flower" style="fill:${pick(['#fffdf8', '#fff7ef', '#fdf0f1', '#f7f4ff', '#fffaf0'])}" cx="${(px + random(-8, 8)).toFixed(1)}" cy="${(py + random(-7, 7)).toFixed(1)}" r="${random(2.2, 3.6).toFixed(1)}"/>`).join('');
+  let parts = `<path class="baby-stem" style="stroke:${pick(['#97b28e', '#a6bd9d', '#88a681'])}" d="M${ox} ${oy} Q${cx} ${cy} ${ex} ${ey}"/>`;
   [.4, .55, .7, .85].forEach(t => {
-    const [px, py] = at(t), bx = px + random(-22, 22), by = py - random(8, 20);
+    const [px, py] = at(t), bx = px + random(-reach, reach), by = py - random(6, reach);
     parts += `<path class="baby-stem" d="M${px} ${py} L${bx} ${by}"/>${cluster(bx, by)}`;
   });
-  parts += cluster(ex, ey);
-  return { front: Math.abs(ex - 210) > 140, html: `<g aria-hidden="true">${parts}</g>` };
-});
-const breathBack = sprays.filter(s => !s.front).map(s => s.html).join('');
-const breathFront = sprays.filter(s => s.front).map(s => s.html).join('');
+  return `<g aria-hidden="true">${parts + cluster(ex, ey)}</g>`;
+}
+
+// Behind the tulips: tall sprays rising above and between the blooms.
+const breathBack = Array.from({ length: 26 }, () => {
+  const ox = random(110, 310);
+  return makeSpray(ox, 178, ox + (ox - 210) * random(.5, 1.1) + random(-18, 18), random(18, 100));
+}).join('');
+
+// In front of the tulips: short sprays tucked in just below the blooms, plus a few on the outer edges.
+const breathLow = Array.from({ length: 18 }, () => {
+  const ox = random(85, 335);
+  return makeSpray(ox, 186, ox + (ox - 210) * random(.15, .4) + random(-10, 10), random(128, 164), 14);
+}).join('');
+const breathEdge = Array.from({ length: 6 }, () => {
+  const ox = random(110, 310), side = ox < 210 ? -1 : 1;
+  return makeSpray(ox, 178, 210 + side * random(145, 185), random(30, 100));
+}).join('');
+const breathFront = breathLow + breathEdge;
 
 /* ---------- Tulips arranged in a dome ---------- */
 const centers = Array.from({ length: 10 }, (_, i) => {
   const t = i / 9;
   return {
-    x: 84 + t * 252 + random(-4, 4),
-    y: 126 - 62 * Math.sin(Math.PI * t) ** .8 + (i % 2 ? 12 : 0) + random(-4, 4),
+    x: 74 + t * 272 + random(-4, 4),
+    y: 124 - 68 * Math.sin(Math.PI * t) ** .8 + (i % 2 ? 16 : 0) + random(-5, 5),
   };
 });
 
@@ -67,7 +83,7 @@ const escapeText = s => s.replaceAll('&', '&amp;').replaceAll('<', '&lt;');
 
 function stemMarkup({ x, y }) {
   const endX = 210 + (x - 210) * .15, endY = 190;
-  return `<path class="stem" d="M${x} ${y + 1} Q${x + random(-8, 8)} ${y + 60} ${endX} ${endY}"/>`;
+  return `<path class="stem" style="stroke:hsl(${random(110, 145)} ${random(14, 22)}% ${random(50, 60)}%)" d="M${x} ${y + 1} Q${x + random(-8, 8)} ${y + 60} ${endX} ${endY}"/>`;
 }
 
 function tulipMarkup({ x, y }, index) {
