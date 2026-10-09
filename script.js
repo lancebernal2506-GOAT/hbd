@@ -1,7 +1,11 @@
 const svg = document.querySelector('#bouquet');
 const flowerScreen = document.querySelector('#flower-screen');
 const openFlowerSvg = document.querySelector('#open-flower');
+const pickedGarden = document.querySelector('#picked-garden');
+const finalPaper = document.querySelector('#final-paper');
 let lastFlower = null;
+const pickedFlowers = new Set();
+let completionPending = false;
 
 const messages = [
   "You're a great friend and I'm very thankful to have you in my life, more than i could ever express", 
@@ -83,15 +87,18 @@ const centers = (() => {
   return pts;
 })();
 
-function splitMessage(text) {
-  const words = text.split(' ');
-  if (text.length <= 11) return [text];
-  let best = 1, diff = Infinity;
-  for (let i = 1; i < words.length; i++) {
-    const d = Math.abs(words.slice(0, i).join(' ').length - words.slice(i).join(' ').length);
-    if (d < diff) { diff = d; best = i; }
+function wrapMessage(text, maxLength = 13) {
+  const lines = [];
+  let line = '';
+  for (const word of text.split(' ')) {
+    const candidate = line ? `${line} ${word}` : word;
+    if (candidate.length > maxLength && line) {
+      lines.push(line);
+      line = word;
+    } else line = candidate;
   }
-  return [words.slice(0, best).join(' '), words.slice(best).join(' ')];
+  if (line) lines.push(line);
+  return lines;
 }
 const escapeText = s => s.replaceAll('&', '&amp;').replaceAll('<', '&lt;');
 
@@ -103,9 +110,10 @@ function stemMarkup({ x, y }) {
 function tulipMarkup({ x, y }, index) {
   const deep = colors[index][0];
   const angle = (x - 210) / 140 * 22 + random(-14, 14);
-  const lines = splitMessage(messages[index]);
+  const lines = wrapMessage(messages[index]);
+  const firstLine = -18 - (lines.length - 1) * 3.25;
   const text = lines.map((line, n) =>
-    `<text x="0" y="${lines.length === 1 ? -26 : -32 + n * 10}" text-anchor="middle">${escapeText(line)}</text>`).join('');
+    `<text x="0" y="${firstLine + n * 6.5}" text-anchor="middle">${escapeText(line)}</text>`).join('');
   const edge = `stroke="${deep}"`;
   return `<g class="tulip" data-flower="${index}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${angle.toFixed(1)})" role="button" tabindex="0" aria-label="Open tulip ${index + 1}">
       <circle class="hit-area" r="24" fill="transparent"/>
@@ -119,7 +127,7 @@ function tulipMarkup({ x, y }, index) {
         <path class="petal-vein" d="M-4 -38 C-12 -28 -15 -12 -10 6 M-9 -33 C-16 -22 -16 -8 -13 2 M10 -36 C15 -24 15 -10 10 5" stroke="${deep}"/>
         <path class="petal-inner" d="M-13 -22 Q-16 -8 -11 3 Q-8 -10 -13 -22Z"/>
         <circle class="flower-heart" cx="0" cy="-4" r="3"/>
-        <g class="paper-note"><path d="M-25 -44 Q0 -49 25 -44 L22 -9 Q0 -5 -22 -9Z" fill="#fff9e9" stroke="#dfc8a5" stroke-width="1.2"/>${text}</g>
+        <g class="tulip-message">${text}</g>
       </g>
     </g>`;
 }
@@ -156,19 +164,53 @@ svg.innerHTML = `${tulipDefs}${wrapBack}${greens}${breathBack}<g class="stems">$
 
 /* ---------- Opening a tulip full-screen ---------- */
 function openFlower(flower) {
+  if (document.body.classList.contains('is-gathering') || finalPaper.classList.contains('is-visible')) return;
   lastFlower = flower;
+  const id = Number(flower.dataset.flower);
+  if (!pickedFlowers.has(id)) {
+    pickedFlowers.add(id);
+    flower.classList.add('is-picked');
+    addPickedFlower(flower, id);
+    if (pickedFlowers.size === messages.length) completionPending = true;
+  }
   const bloomMarkup = flower.querySelector('.bloom').innerHTML;
-  openFlowerSvg.innerHTML = `<path class="stem" stroke-width="1.5" d="M0 5 Q2 30 0 62" transform="translate(120 150) scale(1.95)"/>
-    <g class="tulip screen-flower" transform="translate(120 150) scale(1.95)"><g class="bloom">${bloomMarkup}</g></g>`;
+  openFlowerSvg.innerHTML = `<path class="stem" stroke-width="1.5" d="M0 5 Q2 30 0 62" transform="translate(120 166) scale(2.5)"/>
+    <g class="tulip screen-flower" transform="translate(120 166) scale(2.5)"><g class="bloom">${bloomMarkup}</g></g>`;
   flowerScreen.hidden = false;
   const bloom = openFlowerSvg.querySelector('.screen-flower');
   requestAnimationFrame(() => requestAnimationFrame(() => bloom.classList.add('is-open')));
+}
+
+function addPickedFlower(flower, id) {
+  const item = document.createElement('button');
+  item.type = 'button';
+  item.className = 'picked-tulip';
+  item.style.setProperty('--pick-delay', `${id * 35}ms`);
+  item.setAttribute('aria-label', `Read picked tulip ${id + 1}`);
+  item.innerHTML = `<svg class="picked-icon" viewBox="-28 -54 56 72" aria-hidden="true">${tulipDefs}<g class="tulip" transform="translate(0 0)"><g class="bloom">${flower.querySelector('.bloom').innerHTML}</g></g></svg>`;
+  item.addEventListener('click', () => openFlower(flower));
+  pickedGarden.append(item);
+  pickedGarden.hidden = false;
+}
+
+function startGathering() {
+  flowerScreen.hidden = true;
+  openFlowerSvg.replaceChildren();
+  document.body.classList.add('is-gathering');
+  window.setTimeout(() => {
+    finalPaper.hidden = false;
+    requestAnimationFrame(() => finalPaper.classList.add('is-visible'));
+  }, 950);
 }
 
 function closeFlower() {
   flowerScreen.hidden = true;
   openFlowerSvg.replaceChildren();
   lastFlower?.focus();
+  if (completionPending) {
+    completionPending = false;
+    startGathering();
+  }
 }
 
 svg.addEventListener('click', event => {

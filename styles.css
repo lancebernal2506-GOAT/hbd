@@ -1,8 +1,8 @@
 * { box-sizing: border-box; }
 html, body { width: 100%; height: 100%; margin: 0; }
 body { overflow: hidden; background: #fffaf7; }
-.page { display: grid; width: 100%; height: 100%; min-height: 100svh; place-items: center; }
-#bouquet { display: block; width: min(100vw, 620px); height: min(100svh, 760px); overflow: visible; }
+.page { display: grid; width: 100%; height: calc(100svh - 118px); min-height: 300px; place-items: center; }
+#bouquet { display: block; width: min(100vw, 560px); height: min(100%, 690px); overflow: visible; }
 .stem { fill: none; stroke: #759879; stroke-width: 4; stroke-linecap: round; }
 .leaf { fill: #8daf89; stroke: #719274; stroke-width: 1; }
 .baby-stem { fill: none; stroke: #97b28e; stroke-width: 1.2; stroke-linecap: round; }
@@ -18,7 +18,7 @@ body { overflow: hidden; background: #fffaf7; }
 .tulip.is-open .petal-vein { opacity: 0; }
 .tulip .petal-inner { fill: #fff; opacity: .4; stroke: none; pointer-events: none; transition: opacity .4s; }
 .tulip:focus-visible { filter: drop-shadow(0 0 4px #db829c); }
-/* fully open: petals part outward and the note rises */
+/* Fully open petals leave the flower itself as the message surface. */
 .flower-base { fill: #a9c39a; pointer-events: none; }
 .tulip.is-open .petal-left { transform: translate(-3px, 0) rotate(-50deg); }
 .tulip.is-open .petal-right { transform: translate(3px, 0) rotate(50deg); }
@@ -26,17 +26,35 @@ body { overflow: hidden; background: #fffaf7; }
 .tulip.is-open .petal-fr { transform: translate(4px, 2px) rotate(32deg) scaleY(.92); }
 .tulip.is-open .petal-inner { opacity: 0; }
 .tulip .flower-heart { fill: #fff1d6; opacity: .92; pointer-events: none; }
-.paper-note { opacity: 0; transform-box: fill-box; transform-origin: bottom center; transform: scaleY(.06) translateY(14px); transition: transform .65s cubic-bezier(.18,.85,.25,1.15) .2s, opacity .3s .2s; pointer-events: none; }
-.paper-note text { fill: #805e67; font-family: Georgia, serif; font-size: 6.2px; }
-.tulip.is-open .paper-note { opacity: 1; transform: scaleY(1) translateY(0); }
+.tulip-message { display: none; pointer-events: none; }
+.screen-flower .tulip-message { display: block; }
+.tulip-message text { fill: #754f61; font-family: Georgia, serif; font-size: 5.2px; font-weight: 600; paint-order: stroke; stroke: #fffaf4; stroke-width: .8px; stroke-linejoin: round; }
+.tulip.is-picked > .hit-area { fill: #fff8f4; fill-opacity: .1; }
+.picked-garden { position: fixed; z-index: 2; right: 8px; bottom: 8px; left: 8px; display: flex; width: min(calc(100vw - 16px), 620px); margin-inline: auto; flex-wrap: wrap; justify-content: center; gap: 6px; padding: 7px; border: 1px solid #f1ddd6aa; border-radius: 22px; background: #fffaf0c9; box-shadow: 0 7px 24px #987a6830; backdrop-filter: blur(7px); }
+.picked-garden[hidden] { display: none; }
+.picked-tulip { display: grid; width: 44px; height: 50px; flex: 0 0 44px; place-items: center; padding: 2px; border: 1px solid #f1d9d9; border-radius: 17px; background: #fff5f4; cursor: pointer; transition: transform .2s, background .2s; }
+.picked-tulip:hover, .picked-tulip:focus-visible { transform: translateY(-3px); background: #fbe8ea; outline: 2px solid #d991a5; outline-offset: 1px; }
+.picked-icon { width: 100%; height: 100%; overflow: visible; }
+.picked-icon .petal { stroke-width: .8; stroke-opacity: .55; stroke-linejoin: round; transform-box: fill-box; transform-origin: 50% 90%; }
+.picked-icon .petal-left { transform: rotate(4deg); }.picked-icon .petal-right { transform: rotate(-4deg); }
+.picked-icon .petal-fl, .picked-icon .petal-fr { transform: none; }
+.picked-icon .petal-vein { fill: none; stroke-width: .5; opacity: .28; }.picked-icon .petal-inner { fill: #fff; opacity: .4; stroke: none; }
+.picked-icon .flower-base { fill: #a9c39a; }
 .flower-screen { position: fixed; inset: 0; z-index: 5; display: grid; place-items: center; background: #fffaf7; animation: screen-in .24s ease-out both; cursor: pointer; }
 .flower-screen[hidden] { display: none; }
-#open-flower { width: min(100vw, 520px); height: min(100svh, 560px); overflow: visible; }
-.page.is-gathering #bouquet { animation: tulips-gather .9s cubic-bezier(.45,0,.7,.25) forwards; }
-.final-paper { position: fixed; inset: 50% auto auto 50%; width: min(72vw, 310px); height: min(72vh, 420px); border: 1px solid #e9b5c5; border-radius: 4px; background: linear-gradient(145deg, #f9dce5, #f4c9d8 62%, #efbdcf); box-shadow: 0 22px 65px #946c6b35, inset 0 0 0 8px #ffe8ee65; transform: translate(-50%, -47%) scaleY(0); transform-origin: center; }
+#open-flower { width: min(100vw, 560px); height: min(100svh, 650px); overflow: visible; }
+body.is-gathering #bouquet { animation: tulips-gather .95s cubic-bezier(.45,0,.7,.25) forwards; }
+body.is-gathering .picked-tulip { animation: picked-gather .7s cubic-bezier(.4,0,.7,.2) var(--pick-delay, 0ms) forwards; }
+.final-paper { position: fixed; inset: 0; z-index: 8; display: grid; place-items: center; overflow: hidden; background: radial-gradient(ellipse at 50% 27%, #fffdf9 0, #fbf5ed 40%, #f2e7dc 100%); opacity: 0; }
 .final-paper[hidden] { display: none; }
-.page.is-complete + .flower-screen + .final-paper { animation: paper-unfold .9s cubic-bezier(.16,.85,.3,1.15) forwards; }
+.final-paper.is-visible { animation: paper-unfold .65s ease-out both; }
+.final-paper svg { width: min(78vw, 460px); height: min(80svh, 650px); overflow: visible; transform-origin: 50% 90%; }
+.poem-tulip { fill: url(#poem-paper); stroke: #d695b1; stroke-width: 2; stroke-linejoin: round; filter: drop-shadow(0 16px 18px #976a7330); }
+.poem-stem { fill: none; stroke: #aebc92; stroke-width: 12; stroke-linecap: round; }
+.final-paper.is-visible svg { animation: poem-form .95s cubic-bezier(.18,.85,.27,1.2) .2s both; }
 @keyframes tulips-gather { 0% { opacity: 1; transform: scale(1) rotate(0); } 65% { opacity: .85; transform: scale(.24) rotate(-8deg); } 100% { opacity: 0; transform: scale(.03) rotate(12deg); } }
-@keyframes paper-unfold { 0% { opacity: 0; transform: translate(-50%, -47%) scaleY(.015); } 75% { opacity: 1; transform: translate(-50%, -50%) scaleY(1.04); } 100% { opacity: 1; transform: translate(-50%, -50%) scaleY(1); } }
+@keyframes picked-gather { to { opacity: 0; transform: scale(.1) translateY(-20px); } }
+@keyframes paper-unfold { from { opacity: 0; } to { opacity: 1; } }
+@keyframes poem-form { from { opacity: .15; transform: scale(.08) rotate(-18deg); } 75% { opacity: 1; transform: scale(1.05) rotate(3deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
 @keyframes screen-in { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
