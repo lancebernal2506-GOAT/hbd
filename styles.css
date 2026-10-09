@@ -32,5 +32,11 @@ body { overflow: hidden; background: #fffaf7; }
 .flower-screen { position: fixed; inset: 0; z-index: 5; display: grid; place-items: center; background: #fffaf7; animation: screen-in .24s ease-out both; cursor: pointer; }
 .flower-screen[hidden] { display: none; }
 #open-flower { width: min(100vw, 520px); height: min(100svh, 560px); overflow: visible; }
+.page.is-gathering #bouquet { animation: tulips-gather .9s cubic-bezier(.45,0,.7,.25) forwards; }
+.final-paper { position: fixed; inset: 50% auto auto 50%; width: min(72vw, 310px); height: min(72vh, 420px); border: 1px solid #e9b5c5; border-radius: 4px; background: linear-gradient(145deg, #f9dce5, #f4c9d8 62%, #efbdcf); box-shadow: 0 22px 65px #946c6b35, inset 0 0 0 8px #ffe8ee65; transform: translate(-50%, -47%) scaleY(0); transform-origin: center; }
+.final-paper[hidden] { display: none; }
+.page.is-complete + .flower-screen + .final-paper { animation: paper-unfold .9s cubic-bezier(.16,.85,.3,1.15) forwards; }
+@keyframes tulips-gather { 0% { opacity: 1; transform: scale(1) rotate(0); } 65% { opacity: .85; transform: scale(.24) rotate(-8deg); } 100% { opacity: 0; transform: scale(.03) rotate(12deg); } }
+@keyframes paper-unfold { 0% { opacity: 0; transform: translate(-50%, -47%) scaleY(.015); } 75% { opacity: 1; transform: translate(-50%, -50%) scaleY(1.04); } 100% { opacity: 1; transform: translate(-50%, -50%) scaleY(1); } }
 @keyframes screen-in { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
