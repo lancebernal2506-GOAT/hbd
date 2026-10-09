@@ -17,7 +17,27 @@
     <svg id="open-flower" viewBox="0 0 240 260" aria-hidden="true"></svg>
   </div>
   <div id="final-paper" class="final-paper" aria-label="Blank paper in blended tulip colors" hidden>
-    <div class="poem-sheet" aria-hidden="true"></div>
+    <svg id="paper-breath" class="paper-breath" viewBox="0 0 700 800" preserveAspectRatio="none" aria-hidden="true"></svg>
+    <div class="poem-sheet" aria-hidden="true">
+      <svg class="sheet-fractures" viewBox="0 0 530 680" preserveAspectRatio="none">
+        <defs>
+          <filter id="paper-grain" x="0" y="0" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency=".72" numOctaves="2" seed="7"/>
+            <feColorMatrix type="saturate" values="0"/>
+            <feComponentTransfer><feFuncA type="table" tableValues="0 .36"/></feComponentTransfer>
+          </filter>
+        </defs>
+        <rect width="530" height="680" fill="#755e50" filter="url(#paper-grain)" opacity=".32"/>
+        <g class="petal-cracks">
+          <path d="M43 0 L61 28 L48 49 L74 73 L67 105 M61 28 L86 35 L95 57"/>
+          <path d="M483 0 L464 31 L477 54 L451 78 L463 108 M464 31 L438 39 L429 61"/>
+          <path d="M0 263 L28 279 L19 302 L48 319 L43 348 M28 279 L57 272 L70 291"/>
+          <path d="M530 261 L502 279 L512 302 L483 320 L490 350 M502 279 L474 270 L462 290"/>
+          <path d="M46 680 L64 651 L52 630 L80 607 L75 580 M64 651 L91 659 L104 637"/>
+          <path d="M484 680 L466 650 L478 630 L450 608 L455 580 M466 650 L439 658 L426 637"/>
+        </g>
+      </svg>
+    </div>
   </div>
 </body>
 </html>

@@ -13,7 +13,7 @@ let completionTimer = null;
 const messages = [
   "You're a great friend and I'm very thankful to have you in my life, more than i could ever express", 
   "I hope that you see how much you mean to me with those mesmerizing eyes", 
-  'You make me smile', 
+  "You are beautiful and very very cute. I know you know that already🙄. You never fail to make me take a second to admire your beauty everyday", 
   'You are magic',
   'I am so so so so so so proud of you',
   'You brighten up my day with just your smile so keep smiling!', 
@@ -33,7 +33,7 @@ const colors = hues.map(h => {
   return [`hsl(${h} ${sat}% ${70 + lift}%)`, `hsl(${h} ${random(70, 90)}% ${95 + lift / 3}%)`, `hsl(${h} ${sat}% ${85 + lift}%)`];
 });
 const paperColors = colors.map(([, , mid]) => mid);
-finalPaper.querySelector('.poem-sheet').style.background = `linear-gradient(135deg, ${paperColors.map((color, i) => `${color} ${(i / (paperColors.length - 1) * 100).toFixed(1)}%`).join(', ')})`;
+finalPaper.querySelector('.poem-sheet').style.setProperty('--petal-gradient', `linear-gradient(135deg, ${paperColors.map((color, i) => `${color} ${(i / (paperColors.length - 1) * 100).toFixed(1)}%`).join(', ')})`);
 const tulipDefs = `<defs>${colors.map(([deep, light, mid], i) =>
   `<linearGradient id="tf${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${deep}"/><stop offset=".5" stop-color="${light}"/><stop offset="1" stop-color="${mid}"/></linearGradient>` +
   `<linearGradient id="tb${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${deep}"/><stop offset=".6" stop-color="${mid}"/><stop offset="1" stop-color="${light}"/></linearGradient>`).join('')}</defs>`;
@@ -78,6 +78,15 @@ const breathEdge = [-1, -1, 1, 1].map((side, i) => {
   return makeSpray(ox, 178, 210 + side * random(150, 185), random(30, 100));
 }).join('');
 const breathFront = breathLow + breathEdge;
+
+// Baby's breath frames the final sheet, with the paper sitting in front of the stems.
+const paperBreath = document.querySelector('#paper-breath');
+paperBreath.innerHTML = Array.from({ length: 14 }, (_, i) => {
+  const side = i < 7 ? -1 : 1;
+  const baseX = side < 0 ? random(15, 65) : random(635, 685);
+  const endX = side < 0 ? random(45, 95) : random(605, 655);
+  return makeSpray(baseX, random(650, 770), endX, random(150, 330), random(22, 38));
+}).join('');
 
 /* ---------- Tulips scattered at random inside a dome-shaped area ---------- */
 const centers = (() => {
