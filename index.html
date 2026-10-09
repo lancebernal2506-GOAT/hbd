@@ -22,12 +22,18 @@
       <svg class="sheet-fractures" viewBox="0 0 530 680" preserveAspectRatio="none">
         <defs>
           <filter id="paper-grain" x="0" y="0" width="100%" height="100%">
-            <feTurbulence type="fractalNoise" baseFrequency=".72" numOctaves="2" seed="7"/>
+            <feTurbulence type="fractalNoise" baseFrequency=".55" numOctaves="3" seed="7"/>
             <feColorMatrix type="saturate" values="0"/>
-            <feComponentTransfer><feFuncA type="table" tableValues="0 .36"/></feComponentTransfer>
+            <feComponentTransfer><feFuncA type="table" tableValues="0 .5"/></feComponentTransfer>
           </filter>
+          <filter id="paper-stain" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="14"/></filter>
         </defs>
         <rect width="530" height="680" fill="#755e50" filter="url(#paper-grain)" opacity=".32"/>
+        <g class="paper-stains" filter="url(#paper-stain)">
+          <ellipse cx="53" cy="165" rx="40" ry="82"/><ellipse cx="477" cy="496" rx="48" ry="72"/>
+          <ellipse cx="448" cy="92" rx="58" ry="28"/><ellipse cx="88" cy="570" rx="44" ry="48"/>
+        </g>
+        <path class="paper-rim" d="M18 24 L35 12 L59 18 L84 8 L113 15 L142 9 L175 16 L210 8 L247 14 L281 7 L318 14 L352 8 L387 17 L420 10 L455 17 L489 9 L512 23 L520 47 L514 77 L522 110 L515 145 L522 179 L514 214 L522 250 L515 288 L523 325 L515 361 L522 397 L514 436 L523 471 L515 505 L521 544 L513 576 L520 612 L513 644 L495 666 L466 659 L436 669 L402 661 L369 670 L333 662 L298 671 L263 663 L228 670 L191 661 L157 669 L120 661 L88 669 L57 659 L31 666 L14 647 L21 616 L13 581 L20 546 L12 510 L20 474 L13 437 L21 400 L13 365 L20 327 L12 290 L20 253 L13 216 L21 179 L13 144 L20 108 L12 75 L19 48Z"/>
         <g class="petal-cracks">
           <path d="M43 0 L61 28 L48 49 L74 73 L67 105 M61 28 L86 35 L95 57"/>
           <path d="M483 0 L464 31 L477 54 L451 78 L463 108 M464 31 L438 39 L429 61"/>
@@ -35,6 +41,7 @@
           <path d="M530 261 L502 279 L512 302 L483 320 L490 350 M502 279 L474 270 L462 290"/>
           <path d="M46 680 L64 651 L52 630 L80 607 L75 580 M64 651 L91 659 L104 637"/>
           <path d="M484 680 L466 650 L478 630 L450 608 L455 580 M466 650 L439 658 L426 637"/>
+          <path d="M127 168 L151 190 L139 214 L169 238 M405 410 L382 432 L393 457 L367 479"/>
         </g>
       </svg>
     </div>

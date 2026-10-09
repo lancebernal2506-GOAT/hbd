@@ -81,12 +81,18 @@ const breathFront = breathLow + breathEdge;
 
 // Baby's breath frames the final sheet, with the paper sitting in front of the stems.
 const paperBreath = document.querySelector('#paper-breath');
-paperBreath.innerHTML = Array.from({ length: 14 }, (_, i) => {
+const sideBreath = Array.from({ length: 14 }, (_, i) => {
   const side = i < 7 ? -1 : 1;
   const baseX = side < 0 ? random(15, 65) : random(635, 685);
   const endX = side < 0 ? random(45, 95) : random(605, 655);
   return makeSpray(baseX, random(650, 770), endX, random(150, 330), random(22, 38));
-}).join('');
+});
+const topBreath = [205, 350, 495].map(x => makeSpray(x, 300, x + random(-26, 26), random(-35, 15), 34));
+const bottomBreath = [220, 350, 480].map(x => makeSpray(x, 500, x + random(-24, 24), random(790, 840), 32));
+paperBreath.innerHTML = [...sideBreath, ...topBreath, ...bottomBreath].join('');
+paperBreath.querySelectorAll('.baby-flower').forEach(flower => {
+  flower.setAttribute('r', (Number(flower.getAttribute('r')) * 1.45).toFixed(1));
+});
 
 /* ---------- Tulips scattered at random inside a dome-shaped area ---------- */
 const centers = (() => {
