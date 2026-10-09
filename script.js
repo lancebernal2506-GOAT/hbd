@@ -18,9 +18,9 @@ const messages = [
   'I am so so so so so so proud of you',
   'You brighten up my day with just your smile so keep smiling!', 
   "Always remember that I'm always here for you whenever you need me. I'll be there for you palagi", 
-  'You are wonderful',
-  'Sending a hug', 
-  'You make life sweeter',
+  'You are always loved and appreciated, never forget that',
+  'You are worth more than you think so never settle for less than you deserve', 
+  'I hope the rest of the year is filled with happiness, love, and success for you. Much love!',
 ];
 const random = (min, max) => Math.random() * (max - min) + min;
 const pick = list => list[Math.floor(Math.random() * list.length)];
