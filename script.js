@@ -13,11 +13,11 @@ let completionTimer = null;
 const messages = [
   "You're a great friend and I'm very thankful to have you in my life, more than i could ever express", 
   "I hope that you see how much you mean to me with those mesmerizing eyes", 
-  "You are beautiful and very very cute. I know you know that already🙄. You never fail to make me take a second to admire your beauty everyday", 
-  'You are magic',
+  "You are beautiful and very very cute (i know you know that already🙄). You never fail to make me take a second to admire your beauty everyday", 
+  "I hope you keep on fighting your silent battles and that you never give up on yourself.",
   'I am so so so so so so proud of you',
   'You brighten up my day with just your smile so keep smiling!', 
-  'You can do this!', 
+  "Always remember that I'm always here for you whenever you need me. I'll be there for you palagi", 
   'You are wonderful',
   'Sending a hug', 
   'You make life sweeter',
@@ -203,36 +203,12 @@ function openFlower(flower) {
   } else {
     lastPickedButton = pickedButtons.get(id) || null;
   }
-  const [deep, light, mid] = colors[id];
-  const lines = wrapMessage(messages[id], 22);
-  const fontSize = Math.max(10.5, 14 - Math.max(0, lines.length - 3) * .9);
-  const lineHeight = fontSize * 1.28;
-  const firstLine = 243 - ((lines.length - 1) * lineHeight) / 2;
-  const messageText = lines.map((line, index) =>
-    `<text x="180" y="${(firstLine + index * lineHeight).toFixed(1)}">${escapeText(line)}</text>`).join('');
-  const surfaceId = `tulip-page-${id}`;
-
-  openFlowerSvg.innerHTML = `<defs>
-      <linearGradient id="${surfaceId}" x1=".15" y1="0" x2=".85" y2="1">
-        <stop offset="0" stop-color="${light}"/>
-        <stop offset=".44" stop-color="${mid}"/>
-        <stop offset="1" stop-color="${deep}"/>
-      </linearGradient>
-      <linearGradient id="${surfaceId}-highlight" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
-        <stop offset="1" stop-color="#fff" stop-opacity="0"/>
-      </linearGradient>
-    </defs>
-    <g class="screen-tulip-page">
-      <path class="screen-message-surface" fill="url(#${surfaceId})" d="M180 443 C158 405 88 379 61 293 C36 215 55 121 105 79 C132 56 158 77 180 132 C202 77 228 56 255 79 C305 121 324 215 299 293 C272 379 202 405 180 443Z"/>
-      <path class="screen-message-highlight" fill="url(#${surfaceId}-highlight)" d="M180 132 C158 77 132 56 105 79 C69 109 53 178 67 243 C101 219 137 207 180 208Z"/>
-      <path class="screen-petal-fold" d="M180 132 C180 186 180 285 180 411 M105 79 C141 118 159 162 180 208 M255 79 C219 118 201 162 180 208 M64 291 C110 277 147 276 180 294 M296 291 C250 277 213 276 180 294"/>
-      <path class="screen-petal-edge" d="M180 443 C158 405 88 379 61 293 C36 215 55 121 105 79 C132 56 158 77 180 132 C202 77 228 56 255 79 C305 121 324 215 299 293 C272 379 202 405 180 443Z"/>
-      <g class="screen-message" style="font-size:${fontSize}px">${messageText}</g>
-    </g>`;
+  const bloomMarkup = flower.querySelector('.bloom').innerHTML;
+  openFlowerSvg.innerHTML = `<path class="stem" stroke-width="1.5" d="M0 5 Q2 30 0 62" transform="translate(120 166) scale(2.5)"/>
+    <g class="tulip screen-flower" transform="translate(120 166) scale(2.5)"><g class="bloom">${bloomMarkup}</g></g>`;
   flowerScreen.hidden = false;
-  const page = openFlowerSvg.querySelector('.screen-tulip-page');
-  requestAnimationFrame(() => requestAnimationFrame(() => page.classList.add('is-open')));
+  const bloom = openFlowerSvg.querySelector('.screen-flower');
+  requestAnimationFrame(() => requestAnimationFrame(() => bloom.classList.add('is-open')));
 }
 
 function addPickedFlower(flower, id) {
