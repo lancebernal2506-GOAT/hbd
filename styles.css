@@ -9,11 +9,13 @@ body { overflow: hidden; background: #fffaf7; }
 .baby-flower { fill: #fffdf8; stroke: #e2cfc2; stroke-width: .8; }
 #bouquet g[aria-hidden="true"] { pointer-events: none; }
 .tulip { cursor: pointer; outline: none; }
-.tulip .petal { stroke: #fff9f4; stroke-width: 1.5; stroke-linejoin: round; transform-box: fill-box; transform-origin: 50% 90%; transition: transform .8s cubic-bezier(.2,.85,.25,1.1), opacity .5s; }
+.tulip .petal { stroke-width: .8; stroke-opacity: .55; stroke-linejoin: round; transform-box: fill-box; transform-origin: 50% 90%; transition: transform .8s cubic-bezier(.2,.85,.25,1.1), opacity .5s; }
 .tulip .petal-left { transform: rotate(4deg); }
 .tulip .petal-right { transform: rotate(-4deg); }
 .tulip .petal-center { transform: translateY(3px) scaleY(.97); }
-.tulip .petal-inner { fill: #fff8ef; opacity: .26; stroke: none; pointer-events: none; transition: opacity .4s; }
+.tulip .petal-vein { fill: none; stroke-width: .6; stroke-linecap: round; opacity: .3; pointer-events: none; transition: opacity .4s; }
+.tulip.is-open .petal-vein { opacity: 0; }
+.tulip .petal-inner { fill: #fff; opacity: .4; stroke: none; pointer-events: none; transition: opacity .4s; }
 .tulip:focus-visible { filter: drop-shadow(0 0 4px #db829c); }
 /* fully open: side petals fall outward, front petal folds down, note rises */
 .tulip.is-open .petal-left { transform: translate(-5px, 0) rotate(-46deg); }

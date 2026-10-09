@@ -10,10 +10,14 @@ const messages = [
 ];
 const random = (min, max) => Math.random() * (max - min) + min;
 const palettes = [
-  ['#ed849b', '#e97791', '#f49cb0'], ['#f3afbd', '#ed9bac', '#f7c3ca'],
-  ['#dc7790', '#ce6582', '#e58aa0'], ['#f2c59d', '#edb486', '#f7d4b3'],
-  ['#c996bf', '#b883ac', '#d8aed0'], ['#f6e3d8', '#efd2c4', '#fbeee6'],
+  ['#ec7f9b', '#fde6ea', '#f7b9c6'], ['#f08fa8', '#fff0f2', '#f9c7d1'],
+  ['#e56f8f', '#fbdbe3', '#f3a6b9'], ['#f2a0b2', '#fff3f3', '#fad0d7'],
+  ['#e98aa4', '#fde1e7', '#f5b0c0'], ['#f4b3a6', '#fff0ea', '#fbd2c6'],
 ];
+const colors = Array.from({ length: 10 }, () => palettes[Math.floor(random(0, palettes.length))]);
+const tulipDefs = `<defs>${colors.map(([deep, light, mid], i) =>
+  `<linearGradient id="tf${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${deep}"/><stop offset=".5" stop-color="${light}"/><stop offset="1" stop-color="${mid}"/></linearGradient>` +
+  `<linearGradient id="tb${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${deep}"/><stop offset=".6" stop-color="${mid}"/><stop offset="1" stop-color="${light}"/></linearGradient>`).join('')}</defs>`;
 
 /* ---------- Greenery fanned out behind the tulips ---------- */
 const greens = [-74, -52, -30, -10, 10, 30, 52, 74].map((a, i) => {
@@ -35,7 +39,7 @@ const sprays = Array.from({ length: 18 }, () => {
     parts += `<path class="baby-stem" d="M${px} ${py} L${bx} ${by}"/>${cluster(bx, by)}`;
   });
   parts += cluster(ex, ey);
-  return { front: Math.abs(ex - 210) > 105, html: `<g aria-hidden="true">${parts}</g>` };
+  return { front: Math.abs(ex - 210) > 140, html: `<g aria-hidden="true">${parts}</g>` };
 });
 const breathBack = sprays.filter(s => !s.front).map(s => s.html).join('');
 const breathFront = sprays.filter(s => s.front).map(s => s.html).join('');
@@ -67,19 +71,21 @@ function stemMarkup({ x, y }) {
 }
 
 function tulipMarkup({ x, y }, index) {
-  const palette = palettes[Math.floor(random(0, palettes.length))];
-  const angle = (x - 210) / 140 * 20 + random(-5, 5);
+  const deep = colors[index][0];
+  const angle = (x - 210) / 140 * 26 + random(-6, 6);
   const lines = splitMessage(messages[index]);
   const text = lines.map((line, n) =>
     `<text x="0" y="${lines.length === 1 ? -26 : -32 + n * 10}" text-anchor="middle">${escapeText(line)}</text>`).join('');
-  return `<g class="tulip" data-flower="${index}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${angle.toFixed(1)}) scale(1.05)" role="button" tabindex="0" aria-label="Open tulip ${index + 1}">
+  const edge = `stroke="${deep}"`;
+  return `<g class="tulip" data-flower="${index}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${angle.toFixed(1)})" role="button" tabindex="0" aria-label="Open tulip ${index + 1}">
       <circle class="hit-area" r="24" fill="transparent"/>
       <g class="bloom">
-        <path class="petal petal-left" fill="${palette[0]}" d="M1 6 C-17 7 -24 -9 -21 -26 C-20 -34 -18 -40 -15 -41 C-9 -36 -4 -30 0 -20Z"/>
-        <path class="petal petal-right" fill="${palette[1]}" d="M-1 6 C17 7 24 -9 21 -26 C20 -34 18 -40 15 -41 C9 -36 4 -30 0 -20Z"/>
+        <path class="petal petal-left" fill="url(#tb${index})" ${edge} d="M0 6 C-18 8 -24 -8 -21 -24 C-19 -32 -15 -38 -11 -42 C-8 -36 -4 -30 0 -22Z"/>
+        <path class="petal petal-right" fill="url(#tb${index})" ${edge} d="M0 6 C18 8 24 -8 21 -24 C19 -32 15 -38 11 -42 C8 -36 4 -30 0 -22Z"/>
         <g class="paper-note"><path d="M-25 -44 Q0 -49 25 -44 L22 -9 Q0 -5 -22 -9Z" fill="#fff9e9" stroke="#dfc8a5" stroke-width="1.2"/>${text}</g>
-        <path class="petal petal-center" fill="${palette[2]}" d="M-17 0 C-22 -12 -16 -29 -6 -35 Q0 -39 6 -35 C16 -29 22 -12 17 0 C10 9 -10 9 -17 0Z"/>
-        <path class="petal-inner" d="M-8 -26 Q-12 -12 -7 0 Q-3 -13 -8 -26Z"/>
+        <path class="petal petal-center" fill="url(#tf${index})" ${edge} d="M-15 3 C-20 -8 -17 -26 -6 -36 Q-1 -40 0 -44 Q1 -40 6 -36 C17 -26 20 -8 15 3 C9 10 -9 10 -15 3Z"/>
+        <path class="petal-vein" d="M0 -37 Q-3 -18 0 4 M-8 -28 Q-12 -14 -9 -1 M8 -28 Q12 -14 9 -1" stroke="${deep}"/>
+        <path class="petal-inner" d="M-8 -28 Q-12 -14 -7 -1 Q-3 -14 -8 -28Z"/>
         <circle class="flower-heart" cx="0" cy="-4" r="3"/>
       </g>
     </g>`;
@@ -112,7 +118,7 @@ const bow = `<g aria-hidden="true" stroke="#bb5a92" stroke-width="1.4" stroke-li
 </g>`;
 
 const byY = centers.map((c, i) => ({ c, i })).sort((a, b) => a.c.y - b.c.y);
-svg.innerHTML = `${wrapBack}${greens}${breathBack}<g class="stems">${centers.map(stemMarkup).join('')}</g>
+svg.innerHTML = `${tulipDefs}${wrapBack}${greens}${breathBack}<g class="stems">${centers.map(stemMarkup).join('')}</g>
   <g class="tulips">${byY.map(({ c, i }) => tulipMarkup(c, i)).join('')}</g>${breathFront}${wrapFront}${bow}`;
 
 /* ---------- Opening a tulip full-screen ---------- */
