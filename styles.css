@@ -67,6 +67,8 @@ body.is-gathering .picked-tulip { animation: picked-gather .7s cubic-bezier(.4,0
 .paper-rim { fill: none; stroke: #8b5e4b; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; opacity: .25; }
 .petal-cracks { fill: none; stroke: #98677c; stroke-width: 1.35; stroke-linecap: round; stroke-linejoin: round; opacity: .32; }
 .petal-cracks path { vector-effect: non-scaling-stroke; }
+.poem-text { position: absolute; z-index: 2; inset: 10% 10%; display: grid; align-content: center; gap: .36em; color: #59444d; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(13px, 2vw, 21px); line-height: 1.25; text-align: center; text-wrap: balance; }
+.poem-text p { margin: 0; }
 .final-paper.is-visible .poem-sheet { animation: paper-sheet-open .9s cubic-bezier(.16,.85,.3,1.15) .12s forwards; }
 @keyframes tulips-gather { 0% { opacity: 1; transform: scale(1) rotate(0); } 65% { opacity: .85; transform: scale(.24) rotate(-8deg); } 100% { opacity: 0; transform: scale(.03) rotate(12deg); } }
 @keyframes picked-gather { to { opacity: 0; transform: scale(.1) translateY(-20px); } }
