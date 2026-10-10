@@ -46,10 +46,10 @@ const greens = [-74, -52, -30, -10, 10, 30, 52, 74].map((a, i) => {
 }).join('');
 
 /* ---------- Baby's breath: thin sprays with little white blossoms ---------- */
-function makeSpray(ox, oy, ex, ey, reach = 20) {
+function makeSpray(ox, oy, ex, ey, reach = 20, blossomCount = 3) {
   const cx = (ox + ex) / 2 + random(-12, 12), cy = (oy + ey) / 2;
   const at = t => [(1 - t) ** 2 * ox + 2 * (1 - t) * t * cx + t * t * ex, (1 - t) ** 2 * oy + 2 * (1 - t) * t * cy + t * t * ey];
-  const cluster = (px, py) => Array.from({ length: 4 }, () =>
+  const cluster = (px, py) => Array.from({ length: blossomCount }, () =>
     `<circle class="baby-flower" style="fill:${pick(['#fffdf8', '#fff7ef', '#fdf0f1', '#f7f4ff', '#fffaf0'])}" cx="${(px + random(-8, 8)).toFixed(1)}" cy="${(py + random(-7, 7)).toFixed(1)}" r="${random(2.2, 3.6).toFixed(1)}"/>`).join('');
   let parts = `<path class="baby-stem" style="stroke:${pick(['#97b28e', '#a6bd9d', '#88a681'])}" d="M${ox} ${oy} Q${cx} ${cy} ${ex} ${ey}"/>`;
   [.45, .62, .8].forEach(t => {
@@ -59,40 +59,50 @@ function makeSpray(ox, oy, ex, ey, reach = 20) {
   return `<g aria-hidden="true">${parts + cluster(ex, ey)}</g>`;
 }
 
-// Evenly spaced origins (with a little jitter) so the sprays spread out instead of clumping.
-const spaced = (n, from, to, i) => from + (i + random(.15, .85)) / n * (to - from);
+// A light, intentional fan behind the tulips leaves enough space for the blooms to read clearly.
+const breathBackSprays = [
+  [96, 182, 60, 82, 17], [124, 182, 98, 36, 16], [153, 180, 138, 74, 15],
+  [181, 180, 177, 28, 14], [209, 181, 213, 12, 15], [238, 181, 247, 38, 14],
+  [268, 180, 283, 72, 15], [298, 182, 321, 32, 16], [326, 182, 360, 84, 17],
+];
+const breathBack = breathBackSprays.map(args => makeSpray(...args)).join('');
 
-// Behind the tulips: tall sprays rising above and between the blooms.
-const breathBack = Array.from({ length: 13 }, (_, i) => {
-  const ox = spaced(13, 105, 315, i);
-  return makeSpray(ox, 178, ox + (ox - 210) * random(.6, 1.2) + random(-14, 14), random(18, 100));
-}).join('');
-
-// In front of the tulips: short sprays tucked in just below the blooms, plus a few on the outer edges.
-const breathLow = Array.from({ length: 9 }, (_, i) => {
-  const ox = spaced(9, 90, 330, i);
-  return makeSpray(ox, 186, ox + (ox - 210) * random(.2, .45) + random(-8, 8), random(128, 164), 14);
-}).join('');
-const breathEdge = [-1, -1, 1, 1].map((side, i) => {
-  const ox = 210 + side * (i % 2 ? 70 : 105);
-  return makeSpray(ox, 178, 210 + side * random(150, 185), random(30, 100));
-}).join('');
+// A sparse low collar and one airy spray at each edge finish the bouquet without veiling the tulips.
+const breathLowSprays = [
+  [106, 190, 92, 156, 11], [154, 191, 148, 146, 12], [206, 194, 201, 158, 10],
+  [261, 191, 269, 146, 12], [309, 190, 328, 156, 11],
+];
+const breathLow = breathLowSprays.map(args => makeSpray(...args)).join('');
+const breathEdge = [
+  [120, 182, 52, 76, 14], [300, 182, 366, 76, 14],
+].map(args => makeSpray(...args)).join('');
 const breathFront = breathLow + breathEdge;
 
-// Baby's breath frames the final sheet, with the paper sitting in front of the stems.
+// An airy, slightly uneven halo of baby's breath frames the final sheet without covering the poem.
 const paperBreath = document.querySelector('#paper-breath');
-const sideBreath = Array.from({ length: 14 }, (_, i) => {
-  const side = i < 7 ? -1 : 1;
-  const baseX = side < 0 ? random(15, 65) : random(635, 685);
-  const endX = side < 0 ? random(45, 95) : random(605, 655);
-  return makeSpray(baseX, random(650, 770), endX, random(150, 330), random(22, 38));
-});
-const topBreath = [205, 350, 495].map(x => makeSpray(x, 300, x + random(-26, 26), random(-35, 15), 34));
-const bottomBreath = [220, 350, 480].map(x => makeSpray(x, 500, x + random(-24, 24), random(790, 840), 32));
-paperBreath.innerHTML = [...sideBreath, ...topBreath, ...bottomBreath].join('');
+const paperBreathSprays = [
+  [158, 250, 98, 54, 16, 4], [294, 184, 282, 32, 16, 4], [408, 186, 426, 38, 15, 4], [546, 246, 600, 68, 17, 4],
+  [136, 582, 28, 344, 16, 4], [564, 558, 672, 382, 16, 4],
+  [232, 592, 164, 766, 15, 4], [474, 598, 540, 768, 15, 4],
+];
+paperBreath.innerHTML = paperBreathSprays.map(args => makeSpray(...args)).join('');
 paperBreath.querySelectorAll('.baby-flower').forEach(flower => {
-  flower.setAttribute('r', (Number(flower.getAttribute('r')) * 1.45).toFixed(1));
+  flower.setAttribute('r', (Number(flower.getAttribute('r')) * 1.25).toFixed(1));
 });
+
+// A few loose petals settle around the finished sheet in colors sampled from the bouquet.
+const paperPetals = document.querySelector('#paper-petals');
+const loosePetalShape = 'M0 0 C-17 -3 -28 -20 -23 -38 C-19 -53 -10 -59 0 -31 C10 -59 19 -53 23 -38 C28 -20 17 -3 0 0Z';
+const loosePetalVein = 'M0 -4 C-1 -17 -1 -28 0 -40';
+const loosePetalPositions = [
+  [104, 114, -38, .78, 0], [183, 63, 16, .62, 3], [292, 53, -12, .55, 6], [510, 68, 25, .72, 1], [596, 125, -30, .64, 8],
+  [54, 202, -58, .45, 2], [650, 245, 48, .52, 7], [57, 295, -65, .67, 4], [646, 354, 62, .64, 9],
+  [51, 515, -100, .48, 5], [642, 568, 112, .44, 1], [116, 706, 140, .66, 2], [274, 748, -10, .54, 7], [548, 720, 30, .68, 5],
+];
+paperPetals.innerHTML = loosePetalPositions.map(([x, y, angle, scale, colorIndex], index) => {
+  const [deep, , mid] = colors[colorIndex];
+  return `<g class="loose-petal" style="--petal-delay:${index * 55}ms" transform="translate(${x} ${y}) rotate(${angle}) scale(${scale})"><path fill="${mid}" stroke="${deep}" d="${loosePetalShape}"/><path class="loose-petal-vein" stroke="${deep}" d="${loosePetalVein}"/></g>`;
+}).join('');
 
 /* ---------- Tulips scattered at random inside a dome-shaped area ---------- */
 const centers = (() => {
